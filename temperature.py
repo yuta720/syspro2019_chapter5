@@ -14,6 +14,10 @@ digH = []
 
 t_fine = 0.0
 
+def roop_every10s():
+    for i in range(10):
+        readData()
+        time.sleep(10.0)
 
 def writeReg(reg_address, data):
 	bus.write_byte_data(i2c_address,reg_address,data)
@@ -66,9 +70,10 @@ def readData():
 	temp_raw = (data[3] << 12) | (data[4] << 4) | (data[5] >> 4)
 	hum_raw  = (data[6] << 8)  |  data[7]
 	
-	compensate_T(temp_raw)
+        compensate_T(temp_raw)
 	compensate_P(pres_raw)
 	compensate_H(hum_raw)
+        
 
 def compensate_P(adc_P):
 	global  t_fine
@@ -93,6 +98,7 @@ def compensate_P(adc_P):
 	pressure = pressure + ((v1 + v2 + digP[6]) / 16.0)  
 
 	print "pressure : %7.2f hPa" % (pressure/100)
+        # return "%7.2f" % (pressure/100)
 
 def compensate_T(adc_T):
 	global t_fine
@@ -101,6 +107,7 @@ def compensate_T(adc_T):
 	t_fine = v1 + v2
 	temperature = t_fine / 5120.0
 	print "temp : %-6.2f ℃" % (temperature) 
+        # return "%.2f" % (temperature)
 
 def compensate_H(adc_H):
 	global t_fine
@@ -115,6 +122,7 @@ def compensate_H(adc_H):
 	elif var_h < 0.0:
 		var_h = 0.0
 	print "hum : %6.2f ％" % (var_h)
+        # return "%.2f" % (var_h)
 
 
 def setup():
@@ -141,6 +149,7 @@ get_calib_param()
 
 if __name__ == '__main__':
 	try:
-		readData()
+		# readData()
+                roop_every10s()
 	except KeyboardInterrupt:
 		pass
